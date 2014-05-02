@@ -31,8 +31,8 @@ public class SimpleLockFreeObjectPoolClearTest {
 	@Option(name="-p", metaVar="poolSize", usage="pool Size")
 	public static int poolSize = 20;
 
-	@Option(name="-s", metaVar="BorrowSt", usage="BorrowSt")
-	public static BorrowSt st = BorrowSt.RANDOM;
+	@Option(name="-s", metaVar="BorrowSt", usage="FIRST | RANDOM | RANDOM_FIRST | THREAD")
+	public static BorrowSt st = BorrowSt.RANDOM_FIRST;
 	
 	public static AtomicLong total = new AtomicLong(0);
 	

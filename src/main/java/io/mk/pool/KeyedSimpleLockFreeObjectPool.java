@@ -12,7 +12,7 @@ public class KeyedSimpleLockFreeObjectPool<K, T> {
 	private final BorrowSt st;
 	
 	public KeyedSimpleLockFreeObjectPool(int size, KeyedObjectControllerFactory<K, T> controller) {
-		this(size, controller, BorrowSt.FIRST);
+		this(size, controller, BorrowSt.RANDOM_FIRST);
 	}
 	
 

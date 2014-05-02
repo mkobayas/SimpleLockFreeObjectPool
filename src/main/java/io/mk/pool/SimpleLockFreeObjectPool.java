@@ -33,7 +33,7 @@ public class SimpleLockFreeObjectPool<T> {
 	private final AtomicInteger destroyErrorCount = new AtomicInteger(0);
 	
 	public SimpleLockFreeObjectPool(int size, ObjectController<T> controller) {
-		this(size, controller, BorrowSt.FIRST);
+		this(size, controller, BorrowSt.RANDOM_FIRST);
 	}
 	
 
@@ -134,6 +134,9 @@ public class SimpleLockFreeObjectPool<T> {
 			i = -1;
 		} else if(st.equals(BorrowSt.RANDOM)) {
 			i = (ThreadLocalRandom.current().nextInt() & 0x7FFFFFFF) % size -1;
+		}  else if(st.equals(BorrowSt.RANDOM_FIRST)) {
+			int div = size - sem.availablePermits();
+			i = (ThreadLocalRandom.current().nextInt() & 0x7FFFFFFF) % div -1;
 		} else {
 			i = (int) (Thread.currentThread().getId() % size) -1;
 		}

@@ -11,7 +11,6 @@ import java.util.concurrent.atomic.AtomicLong;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
-import org.kohsuke.args4j.OptionHandlerFilter;
 
 
 public class SimpleLockFreeObjectPoolPefromanceTest {
@@ -20,18 +19,18 @@ public class SimpleLockFreeObjectPoolPefromanceTest {
 	public static boolean help;
 
 	@Option(name="-t", metaVar="th_num", usage="threads count")
-	public static int th_num = 500;
+	public static int th_num = 200;
 
 	
 	@Option(name="-p", metaVar="poolSize", usage="pool Size")
-	public static int poolSize = 100;
+	public static int poolSize = 1000;
 	
 
-	@Option(name="-d", metaVar="duration", usage="duration")
+	@Option(name="-d", metaVar="duration", usage="duration(ms)")
 	public static long time = 3000;
 	
-	@Option(name="-s", metaVar="BorrowSt", usage="BorrowSt")
-	public static BorrowSt st = BorrowSt.RANDOM;
+	@Option(name="-s", metaVar="BorrowSt", usage="FIRST | RANDOM | RANDOM_FIRST | THREAD")
+	public static BorrowSt st = BorrowSt.RANDOM_FIRST;
 	
 
 	@Option(name="-w", metaVar="wait", usage="wait")

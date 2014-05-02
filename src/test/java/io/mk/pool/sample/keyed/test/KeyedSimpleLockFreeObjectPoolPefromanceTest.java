@@ -28,9 +28,9 @@ public class KeyedSimpleLockFreeObjectPoolPefromanceTest {
 
 	@Option(name="-d", metaVar="duration", usage="duration")
 	public static long time = 3000;
-	
-	@Option(name="-s", metaVar="BorrowSt", usage="BorrowSt")
-	public static BorrowSt st = BorrowSt.RANDOM;
+
+	@Option(name="-s", metaVar="BorrowSt", usage="FIRST | RANDOM | RANDOM_FIRST | THREAD")
+	public static BorrowSt st = BorrowSt.RANDOM_FIRST;
 	
 
 	@Option(name="-w", metaVar="wait", usage="wait")

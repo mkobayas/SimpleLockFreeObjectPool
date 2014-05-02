@@ -16,6 +16,7 @@ public class SampleCounterController implements ObjectController<SampleCounter> 
 
 	@Override
 	public void destory(SampleCounter obj) {
+		System.out.println(String.format("counter = %12s", String.format("%,d", obj.get())));
 		total.addAndGet(obj.get());
 	}
 
