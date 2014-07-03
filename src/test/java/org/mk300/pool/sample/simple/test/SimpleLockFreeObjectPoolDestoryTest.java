@@ -6,7 +6,6 @@ import java.util.concurrent.atomic.AtomicLong;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
-import org.kohsuke.args4j.OptionHandlerFilter;
 import org.mk300.pool.BorrowSt;
 import org.mk300.pool.SimpleLockFreeObjectPool;
 import org.mk300.pool.sample.simple.SampleCounter;
