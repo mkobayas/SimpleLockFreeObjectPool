@@ -1,8 +1,9 @@
-package io.mk.pool.sample.keyed;
+package org.mk300.pool.sample.keyed;
 
-import io.mk.pool.KeyedObjectControllerFactory;
-import io.mk.pool.ObjectController;
-import io.mk.pool.sample.simple.SampleCounter;
+import org.mk300.pool.KeyedObjectControllerFactory;
+import org.mk300.pool.ObjectController;
+import org.mk300.pool.sample.simple.SampleCounter;
+
 
 public class KeyedSampleCounterControllerFactory implements KeyedObjectControllerFactory<Integer, SampleCounter> {
 

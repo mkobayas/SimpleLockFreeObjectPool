@@ -1,4 +1,4 @@
-package io.mk.pool.sample.simple;
+package org.mk300.pool.sample.simple;
 
 public class SampleCounter {
 

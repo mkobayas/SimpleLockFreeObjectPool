@@ -1,9 +1,5 @@
-package io.mk.pool.sample.simple.test;
+package org.mk300.pool.sample.keyed.test;
 
-import io.mk.pool.BorrowSt;
-import io.mk.pool.SimpleLockFreeObjectPool;
-import io.mk.pool.sample.simple.SampleCounter;
-import io.mk.pool.sample.simple.SampleCounterController;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicLong;
@@ -11,24 +7,28 @@ import java.util.concurrent.atomic.AtomicLong;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
+import org.mk300.pool.BorrowSt;
+import org.mk300.pool.KeyedSimpleLockFreeObjectPool;
+import org.mk300.pool.sample.keyed.KeyedSampleCounterControllerFactory;
+import org.mk300.pool.sample.simple.SampleCounter;
 
 
-public class SimpleLockFreeObjectPoolPefromanceTest {
+public class KeyedSimpleLockFreeObjectPoolPefromanceTest {
 
 	@Option(name="-h", usage="help")
 	public static boolean help;
 
 	@Option(name="-t", metaVar="th_num", usage="threads count")
-	public static int th_num = 200;
+	public static int th_num = 500;
 
 	
 	@Option(name="-p", metaVar="poolSize", usage="pool Size")
-	public static int poolSize = 1000;
+	public static int poolSize = 20;
 	
 
-	@Option(name="-d", metaVar="duration", usage="duration(ms)")
+	@Option(name="-d", metaVar="duration", usage="duration")
 	public static long time = 3000;
-	
+
 	@Option(name="-s", metaVar="BorrowSt", usage="FIRST | RANDOM | RANDOM_FIRST | THREAD")
 	public static BorrowSt st = BorrowSt.RANDOM_FIRST;
 	
@@ -36,13 +36,13 @@ public class SimpleLockFreeObjectPoolPefromanceTest {
 	@Option(name="-w", metaVar="wait", usage="wait")
 	public static long wait = 0;
 	
-	public static SimpleLockFreeObjectPool<SampleCounter> pool;
-	public static SampleCounterController controller;
+	public static KeyedSimpleLockFreeObjectPool<Integer, SampleCounter> pool;
+	public static KeyedSampleCounterControllerFactory controller;
 	
 	public static void main(String[] args) throws Exception {
 		
 		// parse argument
-		SimpleLockFreeObjectPoolPefromanceTest app = new SimpleLockFreeObjectPoolPefromanceTest();
+		KeyedSimpleLockFreeObjectPoolPefromanceTest app = new KeyedSimpleLockFreeObjectPoolPefromanceTest();
         CmdLineParser parser = new CmdLineParser(app);
         try {
             parser.parseArgument(args);    
@@ -63,8 +63,8 @@ public class SimpleLockFreeObjectPoolPefromanceTest {
 	
 	private static void testThread() throws Exception {
 		
-		controller = new SampleCounterController();
-		pool = new SimpleLockFreeObjectPool<SampleCounter>(poolSize, controller, st);		
+		controller = new KeyedSampleCounterControllerFactory();
+		pool = new KeyedSimpleLockFreeObjectPool<Integer, SampleCounter>(poolSize, controller, st);	
 		
 		System.out.println("START");
 
@@ -84,9 +84,10 @@ public class SimpleLockFreeObjectPoolPefromanceTest {
 						long end = start + time;
 						while(System.currentTimeMillis() < end) {
 
+							int key = (int)localCount % 10;
 							SampleCounter counter = null;
 							try {
-								counter = pool.borrow();
+								counter = pool.borrow(key);
 								
 								counter.increment();
 								
@@ -96,7 +97,7 @@ public class SimpleLockFreeObjectPoolPefromanceTest {
 								
 							} finally {
 								if(counter != null) {
-									pool.release(counter);
+									pool.release(key, counter);
 								}
 							}
 							
@@ -129,11 +130,5 @@ public class SimpleLockFreeObjectPoolPefromanceTest {
 		System.out.println(String.format("Exec time = %s ms" , String.format("%,d", ela )));
 		System.out.println(String.format("%4s Threads : throghput = %12s", th_num, String.format("%,d",  (long)(((double)count.get())*1000d/ela) )));
 		System.out.println(String.format("Exec sum    = %12s", String.format("%,d",  count.get() )));
-		System.out.println(String.format("Counter sum = %12s", String.format("%,d", controller.getTotal())));
-		
-		System.out.println("pool.getCreateCount          = " + pool.getCreateCount());
-		System.out.println("pool.getObjectCount()        = " + pool.getObjectCount());
-		System.out.println("pool.getDestroyCount()       = " + pool.getDestroyCount());
-		System.out.println("pool.getCreationErrorCount() = " + pool.getCreationErrorCount());
 	}
 }

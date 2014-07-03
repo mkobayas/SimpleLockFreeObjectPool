@@ -1,4 +1,4 @@
-package io.mk.pool;
+package org.mk300.pool;
 
 public interface KeyedObjectControllerFactory<K, T> {
 	

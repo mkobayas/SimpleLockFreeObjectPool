@@ -1,20 +1,18 @@
-package io.mk.pool.sample.simple.test;
+package org.mk300.pool.sample.keyed.test;
 
-import io.mk.pool.BorrowSt;
-import io.mk.pool.SimpleLockFreeObjectPool;
-import io.mk.pool.sample.simple.SampleCounter;
-import io.mk.pool.sample.simple.SampleCounterController;
 
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
-import org.kohsuke.args4j.OptionHandlerFilter;
+import org.mk300.pool.BorrowSt;
+import org.mk300.pool.KeyedSimpleLockFreeObjectPool;
+import org.mk300.pool.sample.keyed.KeyedSampleCounterControllerFactory;
+import org.mk300.pool.sample.simple.SampleCounter;
 
 
-
-public class SimpleLockFreeObjectPoolClearTest {
+public class KeyedSimpleLockFreeObjectPoolClearTest {
 
 	@Option(name="-h", usage="help")
 	public static boolean help;
@@ -37,13 +35,13 @@ public class SimpleLockFreeObjectPoolClearTest {
 	public static AtomicLong total = new AtomicLong(0);
 	
 	
-	public static SimpleLockFreeObjectPool<SampleCounter> pool;
-	public static SampleCounterController controller;
+	public static KeyedSimpleLockFreeObjectPool<Integer, SampleCounter> pool;
+	public static KeyedSampleCounterControllerFactory controller;
 	
 	public static void main(String[] args) throws Exception {
 		
 		// parse argument
-		SimpleLockFreeObjectPoolClearTest app = new SimpleLockFreeObjectPoolClearTest();
+		KeyedSimpleLockFreeObjectPoolClearTest app = new KeyedSimpleLockFreeObjectPoolClearTest();
         CmdLineParser parser = new CmdLineParser(app);
         try {
             parser.parseArgument(args);    
@@ -59,8 +57,8 @@ public class SimpleLockFreeObjectPoolClearTest {
         }
         
         
-		controller = new SampleCounterController();
-		pool = new SimpleLockFreeObjectPool<SampleCounter>(poolSize, controller, st);
+		controller = new KeyedSampleCounterControllerFactory();
+		pool = new KeyedSimpleLockFreeObjectPool<Integer, SampleCounter>(poolSize, controller, st);
 		
 		Thread[] t = new Thread[th_num];
 		for(int i=0; i<t.length ; i++) {
@@ -74,12 +72,7 @@ public class SimpleLockFreeObjectPoolClearTest {
 		}
 		
 		for(int i=0; i< 10 ; i++) {
-			Thread.sleep(1000);	
-			System.out.println("pool.getCreateCount = " + pool.getCreateCount());
-			System.out.println("pool.getObjectCount() = " + pool.getObjectCount());
-			System.out.println("pool.getDestroyCount() = " + pool.getDestroyCount());
-			System.out.println("pool.getCreationErrorCount() = " + pool.getCreationErrorCount());
-			System.out.println("- clear() -----------------------------------------------");
+			Thread.sleep(1000);
 			pool.clear();
 		}
 		
@@ -91,14 +84,6 @@ public class SimpleLockFreeObjectPoolClearTest {
 		System.out.println("total     = " + total);
 		
 		pool.destroy();
-		
-		long sum = controller.getTotal();
-		System.out.println("Counter sum = " + sum);
-		
-		System.out.println("pool.getCreateCount = " + pool.getCreateCount());
-		System.out.println("pool.getObjectCount() = " + pool.getObjectCount());
-		System.out.println("pool.getDestroyCount() = " + pool.getDestroyCount());
-		System.out.println("pool.getCreationErrorCount() = " + pool.getCreationErrorCount());
 		
 		
     }
@@ -126,16 +111,15 @@ public class SimpleLockFreeObjectPoolClearTest {
 				long startT = System.currentTimeMillis();
 				
 				for(int i=0 ; i< count ; i++) {
-					
+					int key = subTotal % 10;
 					SampleCounter counter = null;
 					try {
-						counter = pool.borrow();
-						
+						counter = pool.borrow( key);
 						counter.increment();
 						
 					} finally {
 						if(counter != null) {
-							pool.release(counter);
+							pool.release( key, counter);
 						}
 					}
 					

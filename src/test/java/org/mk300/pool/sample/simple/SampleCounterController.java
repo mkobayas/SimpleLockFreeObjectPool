@@ -1,8 +1,9 @@
-package io.mk.pool.sample.simple;
+package org.mk300.pool.sample.simple;
 
-import io.mk.pool.ObjectController;
 
 import java.util.concurrent.atomic.AtomicLong;
+
+import org.mk300.pool.ObjectController;
 
 
 public class SampleCounterController implements ObjectController<SampleCounter> {

@@ -1,4 +1,4 @@
-package io.mk.pool;
+package org.mk300.pool;
 
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.ThreadLocalRandom;

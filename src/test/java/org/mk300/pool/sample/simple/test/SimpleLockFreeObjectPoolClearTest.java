@@ -1,9 +1,5 @@
-package io.mk.pool.sample.simple.test;
+package org.mk300.pool.sample.simple.test;
 
-import io.mk.pool.BorrowSt;
-import io.mk.pool.SimpleLockFreeObjectPool;
-import io.mk.pool.sample.simple.SampleCounter;
-import io.mk.pool.sample.simple.SampleCounterController;
 
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -11,9 +7,14 @@ import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
 import org.kohsuke.args4j.OptionHandlerFilter;
+import org.mk300.pool.BorrowSt;
+import org.mk300.pool.SimpleLockFreeObjectPool;
+import org.mk300.pool.sample.simple.SampleCounter;
+import org.mk300.pool.sample.simple.SampleCounterController;
 
 
-public class SimpleLockFreeObjectPoolDestoryTest {
+
+public class SimpleLockFreeObjectPoolClearTest {
 
 	@Option(name="-h", usage="help")
 	public static boolean help;
@@ -29,11 +30,9 @@ public class SimpleLockFreeObjectPoolDestoryTest {
 	
 	@Option(name="-p", metaVar="poolSize", usage="pool Size")
 	public static int poolSize = 20;
-	
 
 	@Option(name="-s", metaVar="BorrowSt", usage="FIRST | RANDOM | RANDOM_FIRST | THREAD")
 	public static BorrowSt st = BorrowSt.RANDOM_FIRST;
-	
 	
 	public static AtomicLong total = new AtomicLong(0);
 	
@@ -44,7 +43,7 @@ public class SimpleLockFreeObjectPoolDestoryTest {
 	public static void main(String[] args) throws Exception {
 		
 		// parse argument
-		SimpleLockFreeObjectPoolDestoryTest app = new SimpleLockFreeObjectPoolDestoryTest();
+		SimpleLockFreeObjectPoolClearTest app = new SimpleLockFreeObjectPoolClearTest();
         CmdLineParser parser = new CmdLineParser(app);
         try {
             parser.parseArgument(args);    
@@ -74,13 +73,15 @@ public class SimpleLockFreeObjectPoolDestoryTest {
 			t[i].start();
 		}
 		
-		Thread.sleep(2000);
-		System.out.println("pool.getCreateCount = " + pool.getCreateCount());
-		System.out.println("pool.getObjectCount() = " + pool.getObjectCount());
-		System.out.println("pool.getDestroyCount() = " + pool.getDestroyCount());
-		System.out.println("pool.getCreationErrorCount() = " + pool.getCreationErrorCount());
-		System.out.println("------------------------------------------------");
-		pool.destroy();
+		for(int i=0; i< 10 ; i++) {
+			Thread.sleep(1000);	
+			System.out.println("pool.getCreateCount = " + pool.getCreateCount());
+			System.out.println("pool.getObjectCount() = " + pool.getObjectCount());
+			System.out.println("pool.getDestroyCount() = " + pool.getDestroyCount());
+			System.out.println("pool.getCreationErrorCount() = " + pool.getCreationErrorCount());
+			System.out.println("- clear() -----------------------------------------------");
+			pool.clear();
+		}
 		
 		for(int i=0; i<t.length ; i++) {
 			t[i].join();
@@ -89,10 +90,11 @@ public class SimpleLockFreeObjectPoolDestoryTest {
 		System.out.println((end -startT) + " ms " + (int)(count*th_num*loop/((end-startT)/1000d)) + "tx/sec");
 		System.out.println("total     = " + total);
 		
+		pool.destroy();
 		
 		long sum = controller.getTotal();
 		System.out.println("Counter sum = " + sum);
-
+		
 		System.out.println("pool.getCreateCount = " + pool.getCreateCount());
 		System.out.println("pool.getObjectCount() = " + pool.getObjectCount());
 		System.out.println("pool.getDestroyCount() = " + pool.getDestroyCount());
